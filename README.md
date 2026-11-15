@@ -1,314 +1,124 @@
-# Image Transformation System Using Geometric and Intensity Transformations
-
-An interactive image processing system built using **Python** and **Streamlit** that applies various geometric and intensity transformations to images while providing quantitative evaluation metrics and histogram analysis.
-
----
-
-## Overview
-
-Image processing is widely used in computer vision, medical imaging, multimedia systems, and surveillance applications.
-
-This project demonstrates a complete image transformation system that supports:
-
-* Geometric transformations
-* Intensity transformations
-* Histogram visualization
-* PSNR and SSIM evaluation metrics
-* Interactive web interface
-
-The system allows users to upload images, apply transformations in real time, compare outputs, and download processed results.
-
----
-
-## Features
-
-* Upload and process images interactively
-* Apply geometric transformations
-* Apply intensity transformations
-* Compare original and transformed images
-* Display histograms
-* Calculate PSNR and SSIM metrics
-* Download processed images
-* Real-time visualization using Streamlit
-
----
-
-# Geometric Transformations
-
-These transformations modify the spatial arrangement of image pixels.
-
-## 1. Rotation
-
-Rotate images by a specified angle.
-
-### Formula
-
-[
-x' = x \cos\theta - y \sin\theta
-]
-
-[
-y' = x \sin\theta + y \cos\theta
-]
-
-### Effects
-
-* Changes image orientation
-* Preserves pixel intensity distribution
-
----
-
-## 2. Flipping
-
-* Horizontal Flip
-* Vertical Flip
-
-### Effects
-
-* Mirrors image content
-* Histogram remains unchanged
-
----
-
-## 3. Resizing
-
-Changes image dimensions using scaling.
-
-### Effects
-
-* Alters image resolution
-* May affect quality due to interpolation
-
----
-
-# Intensity Transformations
-
-These transformations modify pixel intensity values.
-
----
-
-## 1. Negative Transformation
-
-### Formula
-
-[
-s = 255 - r
-]
-
-### Effects
-
-* Inverts image colors
-* Bright becomes dark and vice versa
-
----
-
-## 2. Log Transformation
-
-### Formula
-
-[
-s = c \cdot \log(1 + r)
-]
-
-### Effects
-
-* Enhances dark regions
-* Compresses bright regions
-* Improves shadow details
-
----
-
-## 3. Thresholding
-
-### Formula
-
-[
-s =
-\begin{cases}
-255 & r > T \
-0 & r \leq T
-\end{cases}
-]
-
-### Effects
-
-* Converts image into binary form
-* Useful for segmentation
-
----
-
-## 4. Gamma Correction (Power Law)
-
-### Formula
-
-[
-s = c \cdot r^\gamma
-]
-
-### Effects
-
-* γ < 1 → brighter image
-* γ > 1 → darker image
-* Non-linear brightness control
-
----
-
-# Evaluation Metrics
-
-## PSNR (Peak Signal-to-Noise Ratio)
-
-### Formula
-
-[
-PSNR = 20 \log_{10}\left(\frac{255}{\sqrt{MSE}}\right)
-]
-
-### Interpretation
-
-* High PSNR → better image quality
-* Low PSNR → greater transformation effect
-
----
-
-## SSIM (Structural Similarity Index)
-
-Measures similarity between images based on:
-
-* Structure
-* Contrast
-* Luminance
-
-### Range
-
-* 0 → completely different
-* 1 → identical images
-
----
-
-# Histogram Analysis
-
-Histograms visualize pixel intensity distributions.
-
-### Observations
-
-* Bright images → histogram shifts right
-* Dark images → histogram shifts left
-* Thresholding → binary peaks
-* Gamma correction → depends on γ value
-
----
-
-# Tech Stack
-
-* Python
-* Streamlit
-* NumPy
-* OpenCV
-* PIL (Pillow)
-* Scikit-image
-* Matplotlib
-
----
-
-# Installation
-
-Clone the repository:
-
-```bash id="9kt4wd"
-git clone https://github.com/Rewanooo22/Short-movie-clip-generation.git
-cd Short-movie-clip-generation
-```
-
-Install dependencies:
-
-```bash id="8aw2z4"
-pip install -r requirements.txt
-```
-
----
-
-# Run the Application
-
-Start the Streamlit app:
-
-```bash id="0mydja"
-streamlit run app.py
-```
-
----
-
-# Project Structure
-
-```text id="gcq9sv"
-Image-Transformation-System/
-│
-├── app.py
-├── transformations/
-├── metrics/
-├── histograms/
-├── outputs/
-├── images/
-├── requirements.txt
+# Streamlit Image Transformation App
+
+An interactive Streamlit web app that applies classic geometric and intensity transformations to an uploaded image, then shows the original and transformed images side by side with PSNR/SSIM metrics, grayscale histograms and a results summary table. A second page has an experimental "medical image analysis" demo that flags regions of high local variance with a heuristic. The CNN defined in the code is never trained or used.
+
+Built as a group coursework project for an Image Processing course at Alamein International University.
+
+## Key features
+
+**Image Enhancement Toolkit (Home page)**
+
+- Upload a `jpg`, `jpeg`, `png`, `bmp` or `gif` image.
+- Intensity transformations (each converts the image to grayscale first):
+  - **Linear Transform (negative):** `s = 255 - r`
+  - **Log Transform:** `s = (255 / log(1 + max(r))) * log(1 + r)`
+  - **Threshold Enhancement:** fixed threshold `T = 125` (`s = 255` if `r > T`, else `0`)
+  - **Power Law (gamma):** `s = 255 * (r / 255)^gamma`, with a gamma slider from 0.1 to 2.5 (default 0.5)
+- Geometric transformations (applied in colour with Pillow):
+  - **Rotate:** angle slider from 0 to 360 degrees (default 90), with the canvas expanded to fit
+  - **Flip horizontal / flip vertical**
+  - **Resize:** scale-factor slider from 0.1 to 2.0 (default 0.5)
+- **All Enhancements** mode runs all eight techniques at once (rotation fixed at 90 degrees, resize fixed at 0.5x, gamma from a slider).
+- Each result shows:
+  - **PSNR**, computed on grayscale versions as `20 * log10(255 / sqrt(MSE))`, reported as 100 when the images are identical
+  - **SSIM**, from `skimage.metrics.structural_similarity` with `data_range=255`
+  - Original and transformed 256-bin grayscale histograms, drawn with `st.line_chart`
+  - A results summary table (technique, purpose, before, after, observation)
+- Before computing metrics, the transformed image is resized back to the original size if needed (after rotation or resizing).
+- Download buttons for each output, and an option to download every output as a ZIP of PNG files.
+
+**Medical Image Analysis page (experimental demo)**
+
+- Upload an X-ray, MRI or CT image (`jpg`, `jpeg`, `png`, `bmp`, `tif`, `tiff`; the uploader also lists `dcm`).
+- The image is converted to grayscale and resized to 224x224.
+- A local-variance map (15x15 window) is rendered as a JET-colour heatmap. Fixed thresholds on intensity statistics and heatmap zone ratios then label the image "Anomaly Detected" or "Normal".
+- The page shows a heuristic "confidence" value, a score, mean/std intensity and anomaly-zone percentages.
+- It also shows the processed image, the heatmap and an adjustable-opacity overlay, and each can be downloaded as a PNG.
+- The page displays a warning that it is **not** a diagnostic tool.
+
+**About page:** a short description of the toolkit.
+
+## Tech stack
+
+| Area | Library |
+|---|---|
+| Web UI | Streamlit |
+| Image I/O and geometric transforms | Pillow |
+| Array maths, histograms, PSNR | NumPy |
+| Filtering, colour maps, PNG encoding (medical page) | OpenCV (`opencv-python`) |
+| SSIM | scikit-image |
+| Optional CNN definition (not used at runtime, see below) | TensorFlow / Keras |
+
+## Project structure
+
+```text
+.
+├── Image Processing Project/
+│   ├── app.py                  # Streamlit app: transformations, metrics, histograms, pages
+│   ├── medical_analysis.py     # MedicalImageAnalyzer: heuristic analysis + unused CNN definition
+│   ├── requirements.txt        # Python dependencies (scikit-image is missing, see below)
+│   ├── .vscode/settings.json   # Editor settings
+│   ├── __pycache__/            # Committed Python bytecode
+│   └── env/                    # Committed local Windows virtualenv (Python 3.9); not project code, ignore it
+├── ImageTransformationSystem (1).pptx   # Project presentation
+├── image report.docx2.docx              # Project report
+├── ~$age report.docx2.docx              # Leftover Office lock file
 └── README.md
 ```
 
----
+## Getting started
 
-# System Features
+### Prerequisites
 
-* Image upload
-* Transformation selection
-* Real-time visualization
-* Metrics computation
-* Histogram comparison
-* Download transformed results
-* Summary table generation
+- Python 3 with `pip`. The pinned `numpy<2.0.0` and `opencv-python<4.9.0` need a Python version that has wheels for them.
 
----
+### Installation
 
-# Results Summary
+```bash
+git clone https://github.com/Rewanooo22/streamlit-image-transformation-app.git
+cd streamlit-image-transformation-app/"Image Processing Project"
 
-| Technique             | Purpose            | Observation         |
-| --------------------- | ------------------ | ------------------- |
-| Linear Transformation | Image inversion    | Bright ↔ Dark       |
-| Log Transformation    | Enhance dark areas | Improved details    |
-| Thresholding          | Segmentation       | Binary output       |
-| Gamma Correction      | Brightness control | Depends on γ        |
-| Rotation              | Orientation change | No intensity change |
-| Flipping              | Mirror image       | Histogram unchanged |
-| Resizing              | Scale image        | Resolution changes  |
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
 
----
+pip install -r requirements.txt scikit-image
+```
 
-# Limitations
+`app.py` imports `skimage.metrics.structural_similarity`, but `scikit-image` is not listed in `requirements.txt`, so the command above installs it explicitly. `requirements.txt` also lists `tensorflow`. The app never imports it in the code path it runs (see Limitations), so you can remove that line if the install is too heavy or fails.
 
-* No adaptive thresholding
-* Limited interpolation methods
-* No deep learning models
-* Heuristic-based analysis only
+Create a fresh virtual environment as shown above. Do not use the committed `env/` folder: it is a Windows virtualenv tied to the original author's machine.
 
----
+### Running
 
-# Applications
+From the repository root:
 
-* Educational image processing demonstrations
-* Basic computer vision preprocessing
-* Medical image enhancement
-* Multimedia applications
-* Histogram analysis experiments
+```bash
+cd "Image Processing Project"
+streamlit run app.py
+```
 
----
----
+Streamlit prints a local URL (by default `http://localhost:8501`). Use the sidebar **Navigation** menu to switch between **Home**, **Medical Image Analysis** and **About**.
 
-# Conclusion
+## Project status and limitations
 
-This project successfully demonstrates both geometric and intensity image transformations in an interactive system. The integration of evaluation metrics and histogram analysis provides both qualitative and quantitative insights into image processing techniques.
+This is coursework, built as an educational demo.
 
-The system serves as an effective educational and visualization tool for understanding image transformation operations.
+- **The medical analysis is heuristic only.** `MedicalImageAnalyzer.build_model()` defines a four-block Keras CNN, but the repository has no training code and no saved weights, and nothing ever sets `is_trained` to `True`. The app also resets `is_trained` to `False` before every analysis. Every result therefore comes from `_heuristic_analysis()`, which uses hand-set thresholds on intensity statistics and local variance. Its "confidence" value is a heuristic score, not a calibrated probability, and the method has not been validated on any dataset. Do not use it for diagnosis.
+- **TensorFlow is effectively unused.** It is imported lazily only on the CNN path, which never runs.
+- **Per-image download buttons** send `PIL.Image.tobytes()` (raw pixel data) with a `.png` file name, so those files are not valid PNGs. The "Download All as ZIP" option saves real PNG files.
+- **PSNR** is computed on `uint8` arrays without casting to a wider type, so the squared-difference step can overflow and the reported values may be inaccurate.
+- The threshold is fixed at 125 (no adaptive or Otsu thresholding). Resizing uses Pillow's default resampling. Intensity transforms always output grayscale.
+- The medical uploader accepts `.dcm`, but images are opened with Pillow, which does not read DICOM files.
+- The repository commits a virtualenv (`env/`), `__pycache__/` and an Office lock file, and has no `.gitignore`.
 
----
+## Future improvements (ideas)
 
-# License
+- Add `scikit-image` to `requirements.txt`, and remove `tensorflow` or make it an optional extra.
+- Encode the per-image downloads as PNG (for example with `io.BytesIO` and `Image.save`).
+- Cast to `float` before computing MSE for PSNR.
+- Add adaptive or Otsu thresholding, and selectable interpolation for rotation and resizing.
+- Remove `env/`, `__pycache__/` and the lock file from version control and add a `.gitignore`.
 
-This project is for educational purposes only.
+## Context
 
+Group project for an Image Processing course at Alamein International University. The project report (`image report.docx2.docx`) and presentation (`ImageTransformationSystem (1).pptx`) are included in the repository.
