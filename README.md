@@ -214,14 +214,16 @@ Histograms visualize pixel intensity distributions.
 
 Clone the repository:
 
-```bash id="9kt4wd"
-git clone https://github.com/Rewanooo22/Short-movie-clip-generation.git
-cd Short-movie-clip-generation
+```bash
+git clone https://github.com/Rewanooo22/streamlit-image-transformation-app.git
+cd "streamlit-image-transformation-app/Image Processing Project"
 ```
 
-Install dependencies:
+Create a virtual environment and install dependencies:
 
-```bash id="8aw2z4"
+```bash
+python -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
@@ -231,7 +233,7 @@ pip install -r requirements.txt
 
 Start the Streamlit app:
 
-```bash id="0mydja"
+```bash
 streamlit run app.py
 ```
 
@@ -239,16 +241,14 @@ streamlit run app.py
 
 # Project Structure
 
-```text id="gcq9sv"
-Image-Transformation-System/
-│
-├── app.py
-├── transformations/
-├── metrics/
-├── histograms/
-├── outputs/
-├── images/
-├── requirements.txt
+```text
+streamlit-image-transformation-app/
+├── Image Processing Project/
+│   ├── app.py                 # Streamlit UI and image transformations
+│   ├── medical_analysis.py    # MedicalImageAnalyzer helpers
+│   └── requirements.txt
+├── ImageTransformationSystem (1).pptx
+├── image report.docx2.docx
 └── README.md
 ```
 

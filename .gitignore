@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.py[cod]
+env/
+venv/
+.venv/
+
+# Office lock files
+~$*
+
+# Editor / OS
+.DS_Store
+Thumbs.db
